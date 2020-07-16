@@ -51,7 +51,6 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<RadioButton>>(() => new PlatformConfigurationRegistry<RadioButton>(this));
 		}
 
-
 		static bool isExperimentalFlagSet = false;
 		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
 		{
@@ -201,6 +200,73 @@ namespace Xamarin.Forms
 			while (parent != null && !(parent is Page))
 				parent = parent.Parent;
 			return parent;
+		}
+	}
+
+	internal class RadioButtonGroupController
+	{
+		readonly WeakReference<Layout<View>> _layoutWeakReference;
+
+		public RadioButtonGroupController(Layout<View> layout)
+		{
+			_layoutWeakReference = new WeakReference<Layout<View>>(layout);
+		}
+
+		string _groupName;
+		RadioButton _selection;
+
+		public string GroupName { get => _groupName; set => SetGroupName(value); }
+		public RadioButton Selection { get => _selection; set => SetSelection(value); }
+
+		// TODO this might not be necessary, simple setter might be fine
+		void SetSelection(RadioButton radioButton)
+		{
+			_selection = radioButton;
+		}
+
+		void SetGroupName(string groupName)
+		{
+			_groupName = groupName;
+		}
+	}
+
+	public static class RadioButtonGroup
+	{
+		static readonly BindableProperty RadioButtonGroupControllerProperty =
+			BindableProperty.CreateAttached("RadioButtonGroupController", typeof(RadioButtonGroupController), typeof(Layout<View>), default(RadioButtonGroupController),
+			defaultValueCreator: (b) => new RadioButtonGroupController((Layout<View>)b),
+			propertyChanged: (b, o, n) => OnControllerChanged(b, (RadioButtonGroupController)o, (RadioButtonGroupController)n));
+
+		static RadioButtonGroupController GetRadioButtonGroupController(BindableObject b)
+		{
+			return (RadioButtonGroupController)b.GetValue(RadioButtonGroupControllerProperty);
+		}
+
+		public static readonly BindableProperty GroupNameProperty =
+			BindableProperty.Create("GroupName", typeof(string), typeof(Layout<View>), null, propertyChanged: (b, o, n) => { GetRadioButtonGroupController(b).GroupName = (string)n; });
+
+		public static string GetGroupName(BindableObject b)
+		{
+			return (string)b.GetValue(GroupNameProperty);
+		}
+
+		public static readonly BindableProperty SelectionProperty =
+			BindableProperty.Create("Selection", typeof(RadioButton), typeof(Layout<View>), null, propertyChanged: (b, o, n) => { GetRadioButtonGroupController(b).Selection = (RadioButton)n; });
+
+		public static RadioButton GetSelection(BindableObject b)
+		{
+			return (RadioButton)b.GetValue(SelectionProperty);
+		}
+
+		static void OnControllerChanged(BindableObject b, RadioButtonGroupController oldC, RadioButtonGroupController newC)
+		{
+			if (newC == null)
+			{
+				return;
+			}
+
+			newC.GroupName = GetGroupName(b);
+			newC.Selection = GetSelection(b);
 		}
 	}
 }

@@ -25,7 +25,9 @@
 						descriptionLabel,
 						button,
 						GalleryBuilder.NavButton("RadioButton Group Gallery", () =>
-							new RadioButtonGroupGalleryPage(), Navigation)
+							new RadioButtonGroupGalleryPage(), Navigation),
+						GalleryBuilder.NavButton("RadioButton Group Attached Property", () =>
+							new RadioButtonGroupAttachedGallery(), Navigation)
 					}
 				}
 			};
