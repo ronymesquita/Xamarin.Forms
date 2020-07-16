@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Controls
 		protected override void InitializeElement(RadioButton element)
 		{
 			Device.SetFlags(new List<string> { ExperimentalFlags.RadioButtonExperimental });
-			element.Text = "RadioButton";
+			element.Content = "RadioButton";
 		}
 
 		protected override void OnDisappearing()
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls
 			var borderButtonContainer = new ViewContainer<RadioButton>(Test.Button.BorderColor,
 				new RadioButton
 				{
-					Text = "BorderColor",
+					Content = "BorderColor",
 					BackgroundColor = Color.Transparent,
 					BorderColor = Color.Red,
 					BorderWidth = 1,
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls
 			var borderRadiusContainer = new ViewContainer<RadioButton>(Test.Button.BorderRadius,
 				new RadioButton
 				{
-					Text = "BorderRadius",
+					Content = "BorderRadius",
 					BackgroundColor = Color.Transparent,
 					BorderColor = Color.Red,
 					BorderWidth = 1,
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls
 			var borderWidthContainer = new ViewContainer<RadioButton>(Test.Button.BorderWidth,
 				new RadioButton
 				{
-					Text = "BorderWidth",
+					Content = "BorderWidth",
 					BackgroundColor = Color.Transparent,
 					BorderColor = Color.Red,
 					BorderWidth = 15,
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls
 			var clickedContainer = new EventViewContainer<RadioButton>(Test.Button.Clicked,
 				new RadioButton
 				{
-					Text = "Clicked"
+					Content = "Clicked"
 				}
 			);
 			clickedContainer.View.Clicked += (sender, args) => clickedContainer.EventFired();
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Controls
 			var pressedContainer = new EventViewContainer<RadioButton>(Test.Button.Pressed,
 				new RadioButton
 				{
-					Text = "Pressed"
+					Content = "Pressed"
 				}
 			);
 			pressedContainer.View.Pressed += (sender, args) => pressedContainer.EventFired();
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls
 			var commandContainer = new ViewContainer<RadioButton>(Test.Button.Command,
 				new RadioButton
 				{
-					Text = "Command",
+					Content = "Command",
 					Command = new Command(() => DisplayActionSheet("Hello Command", "Cancel", "Destroy"))
 				}
 			);
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Controls
 			var fontContainer = new ViewContainer<RadioButton>(Test.Button.Font,
 				new RadioButton
 				{
-					Text = "Font",
+					Content = "Font",
 					Font = Font.SystemFontOfSize(NamedSize.Large, FontAttributes.Bold)
 				}
 			);
@@ -90,14 +90,14 @@ namespace Xamarin.Forms.Controls
 			var textContainer = new ViewContainer<RadioButton>(Test.Button.Text,
 				new RadioButton
 				{
-					Text = "Text"
+					Content = "Text"
 				}
 			);
 
 			var textColorContainer = new ViewContainer<RadioButton>(Test.Button.TextColor,
 				new RadioButton
 				{
-					Text = "TextColor",
+					Content = "TextColor",
 					TextColor = Color.Pink
 				}
 			);
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Controls
 			var paddingContainer = new ViewContainer<RadioButton>(Test.Button.Padding,
 				new RadioButton
 				{
-					Text = "Padding",
+					Content = "Padding",
 					BackgroundColor = Color.Red,
 					Padding = new Thickness(20, 30, 60, 15)
 				}

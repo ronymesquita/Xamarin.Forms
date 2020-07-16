@@ -3,15 +3,92 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_RadioButtonRenderer))]
-	public class RadioButton : Button, IElementConfiguration<RadioButton>
+	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>
 	{
-		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
+		#region ControlTemplate Stuff
 
-		static Dictionary<string, List<WeakReference<RadioButton>>> _groupNameToElements;
+		TapGestureRecognizer _tapGestureRecognizer;
+		Shape _normalEllipse;
+		Shape _checkMark;
+
+		void Initialize()
+		{
+			_tapGestureRecognizer = new TapGestureRecognizer();
+
+			UpdateIsEnabled();
+		}
+
+		protected override void OnParentSet()
+		{
+			base.OnParentSet();
+
+			if (ControlTemplate == null)
+				ControlTemplate = Application.Current.Resources["RadioButtonTemplate"] as ControlTemplate;
+		}
+
+		protected override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+
+			_normalEllipse = GetTemplateChild("NormalEllipse") as Shape;
+			_checkMark = GetTemplateChild("CheckMark") as Shape;
+		}
+
+		void UpdateIsEnabled()
+		{
+			if (IsEnabled)
+			{
+				_tapGestureRecognizer.Tapped += OnRadioButtonChecked;
+				GestureRecognizers.Add(_tapGestureRecognizer);
+			}
+			else
+			{
+				_tapGestureRecognizer.Tapped -= OnRadioButtonChecked;
+				GestureRecognizers.Remove(_tapGestureRecognizer);
+			}
+		}
+
+		void OnRadioButtonChecked(object sender, EventArgs e)
+		{
+			IsChecked = !IsChecked;
+
+			if (IsChecked)
+			{
+				if (_normalEllipse != null)
+					_normalEllipse.Stroke = (Color)Application.Current.Resources["RadioButtonCheckMarkThemeColor"];
+
+				if (_checkMark != null)
+					_checkMark.Opacity = 1;
+			}
+			else
+			{
+				if (_normalEllipse != null)
+					_normalEllipse.Stroke = (Color)Application.Current.Resources["RadioButtonThemeColor"];
+
+				if (_checkMark != null)
+					_checkMark.Opacity = 0;
+			}
+		}
+		#endregion
+
+
+		public static readonly BindableProperty ContentProperty =
+		  BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
+
+		public object Content
+		{
+			get => GetValue(ContentProperty);
+			set => SetValue(ContentProperty, value);
+		}
+
+
+
+		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
 
 		public const string IsCheckedVisualState = "IsChecked";
 
@@ -49,6 +126,7 @@ namespace Xamarin.Forms
 		public RadioButton()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<RadioButton>>(() => new PlatformConfigurationRegistry<RadioButton>(this));
+			Initialize();
 		}
 
 		static bool isExperimentalFlagSet = false;
@@ -68,7 +146,7 @@ namespace Xamarin.Forms
 			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
 
-		public new IPlatformElementConfiguration<T, RadioButton> On<T>() where T : IConfigPlatform
+		public IPlatformElementConfiguration<T, RadioButton> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
@@ -81,6 +159,8 @@ namespace Xamarin.Forms
 				base.ChangeVisualState();
 		}
 
+		#region Group Stuff
+
 		void OnIsCheckedPropertyChanged(bool isChecked)
 		{
 			if (isChecked)
@@ -89,6 +169,8 @@ namespace Xamarin.Forms
 			CheckedChanged?.Invoke(this, new CheckedChangedEventArgs(isChecked));
 			ChangeVisualState();
 		}
+
+		static Dictionary<string, List<WeakReference<RadioButton>>> _groupNameToElements;
 
 		void OnGroupNamePropertyChanged(string oldGroupName, string newGroupName)
 		{
@@ -201,6 +283,7 @@ namespace Xamarin.Forms
 				parent = parent.Parent;
 			return parent;
 		}
+		#endregion
 	}
 
 	internal class RadioButtonGroupController
