@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_RadioButtonRenderer))]
-	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>
+	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>, ITextElement, IFontElement, IBorderElement
 	{
 		#region ControlTemplate Stuff
 
@@ -27,8 +28,8 @@ namespace Xamarin.Forms
 		{
 			base.OnParentSet();
 
-			if (ControlTemplate == null)
-				ControlTemplate = Application.Current.Resources["RadioButtonTemplate"] as ControlTemplate;
+			//if (ControlTemplate == null)
+			//	ControlTemplate = Application.Current.Resources["RadioButtonTemplate"] as ControlTemplate;
 		}
 
 		protected override void OnApplyTemplate()
@@ -76,7 +77,6 @@ namespace Xamarin.Forms
 		}
 		#endregion
 
-
 		public static readonly BindableProperty ContentProperty =
 		  BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
 
@@ -86,7 +86,144 @@ namespace Xamarin.Forms
 			set => SetValue(ContentProperty, value);
 		}
 
+		public string Text
+		{
+			get => GetValue(ContentProperty).ToString();
+			set => SetValue(ContentProperty, value);
+		}
 
+		[Obsolete]
+		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
+		{
+			if (IsPlatformEnabled)
+			{
+				return Device.PlatformServices.GetNativeSize(this, widthConstraint, heightConstraint);
+			}
+
+			return base.OnSizeRequest(widthConstraint, heightConstraint);
+		}
+
+		#region ITextElement
+
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+		}
+
+		public virtual string UpdateFormsText(string source, TextTransform textTransform)
+			=> TextTransformUtilites.GetTransformedText(source, textTransform);
+
+		public TextTransform TextTransform
+		{
+			get { return (TextTransform)GetValue(TextElement.TextTransformProperty); }
+			set { SetValue(TextElement.TextTransformProperty, value); }
+		}
+
+		void ITextElement.OnTextTransformChanged(TextTransform oldValue, TextTransform newValue)
+		{
+		}
+
+		#endregion
+
+		#region IFontElement
+
+		public FontAttributes FontAttributes
+		{
+		// TODO ezhart Is there a nicer way to avoid all this boilerplate?
+			get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
+			set { SetValue(FontElement.FontAttributesProperty, value); }
+		}
+
+		public string FontFamily
+		{
+			get { return (string)GetValue(FontElement.FontFamilyProperty); }
+			set { SetValue(FontElement.FontFamilyProperty, value); }
+		}
+
+		[TypeConverter(typeof(FontSizeConverter))]
+		public double FontSize
+		{
+			get { return (double)GetValue(FontElement.FontSizeProperty); }
+			set { SetValue(FontElement.FontSizeProperty, value); }
+		}
+
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		double IFontElement.FontSizeDefaultValueCreator() =>
+			Device.GetNamedSize(NamedSize.Default, this);
+
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+		#region IBorderElement
+
+		public Color BorderColor
+		{
+			get { return (Color)GetValue(BorderElement.BorderColorProperty); }
+			set { SetValue(BorderElement.BorderColorProperty, value); }
+		}
+
+		public int CornerRadius
+		{
+			get { return (int)GetValue(BorderElement.CornerRadiusProperty); }
+			set { SetValue(BorderElement.CornerRadiusProperty, value); }
+		}
+
+		public double BorderWidth
+		{
+			get { return (double)GetValue(BorderElement.BorderWidthProperty); }
+			set { SetValue(BorderElement.BorderWidthProperty, value); }
+		}
+
+		int IBorderElement.CornerRadiusDefaultValue => (int)BorderElement.CornerRadiusProperty.DefaultValue;
+
+		Color IBorderElement.BorderColorDefaultValue => (Color)BorderElement.BorderColorProperty.DefaultValue;
+
+		double IBorderElement.BorderWidthDefaultValue => (double)BorderElement.BorderWidthProperty.DefaultValue;
+
+		void IBorderElement.OnBorderColorPropertyChanged(Color oldValue, Color newValue)
+		{
+
+		}
+
+		bool IBorderElement.IsCornerRadiusSet() => IsSet(BorderElement.CornerRadiusProperty);
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBorderColorSet() => IsSet(BorderElement.BorderColorProperty);
+		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderElement.BorderWidthProperty);
+
+		#endregion
 
 		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
 
@@ -283,6 +420,9 @@ namespace Xamarin.Forms
 				parent = parent.Parent;
 			return parent;
 		}
+
+	
+
 		#endregion
 	}
 

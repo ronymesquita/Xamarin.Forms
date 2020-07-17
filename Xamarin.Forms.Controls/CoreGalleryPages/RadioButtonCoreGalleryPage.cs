@@ -23,7 +23,8 @@ namespace Xamarin.Forms.Controls
 		{
 			base.Build(stackLayout);
 
-			IsEnabledStateViewContainer.View.Clicked += (sender, args) => IsEnabledStateViewContainer.TitleLabel.Text += " (Tapped)";
+			// TODO ezhart IsCheckedChanged, maybe?
+			//IsEnabledStateViewContainer.View.Clicked += (sender, args) => IsEnabledStateViewContainer.TitleLabel.Text += " (Tapped)";
 
 			var borderButtonContainer = new ViewContainer<RadioButton>(Test.Button.BorderColor,
 				new RadioButton
@@ -55,35 +56,12 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
-			var clickedContainer = new EventViewContainer<RadioButton>(Test.Button.Clicked,
-				new RadioButton
-				{
-					Content = "Clicked"
-				}
-			);
-			clickedContainer.View.Clicked += (sender, args) => clickedContainer.EventFired();
-
-			var pressedContainer = new EventViewContainer<RadioButton>(Test.Button.Pressed,
-				new RadioButton
-				{
-					Content = "Pressed"
-				}
-			);
-			pressedContainer.View.Pressed += (sender, args) => pressedContainer.EventFired();
-
-			var commandContainer = new ViewContainer<RadioButton>(Test.Button.Command,
-				new RadioButton
-				{
-					Content = "Command",
-					Command = new Command(() => DisplayActionSheet("Hello Command", "Cancel", "Destroy"))
-				}
-			);
-
 			var fontContainer = new ViewContainer<RadioButton>(Test.Button.Font,
 				new RadioButton
 				{
 					Content = "Font",
-					Font = Font.SystemFontOfSize(NamedSize.Large, FontAttributes.Bold)
+					FontSize = Device.GetNamedSize(NamedSize.Large, typeof(RadioButton)),
+					FontAttributes = FontAttributes.Bold
 				}
 			);
 
@@ -134,9 +112,6 @@ namespace Xamarin.Forms.Controls
 			Add(borderButtonContainer);
 			Add(borderRadiusContainer);
 			Add(borderWidthContainer);
-			Add(clickedContainer);
-			Add(pressedContainer);
-			Add(commandContainer);
 			Add(fontContainer);
 			Add(textContainer);
 			Add(textColorContainer);

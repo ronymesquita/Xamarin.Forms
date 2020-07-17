@@ -46,8 +46,6 @@ using static Xamarin.Forms.Platform.Android.Platform;
 
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
-[assembly: ExportRenderer(typeof(RadioButton), typeof(DefaultRenderer), new[] { typeof(VisualMarker.ControlTemplateVisual) }, Priority = short.MinValue)]
-
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
