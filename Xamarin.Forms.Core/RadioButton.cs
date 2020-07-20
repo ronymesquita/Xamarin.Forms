@@ -8,7 +8,7 @@ using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
-	[RenderWith(typeof(_RadioButtonRenderer))]
+	//[RenderWith(typeof(_RadioButtonRenderer))]
 	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>, ITextElement, IFontElement, IBorderElement
 	{
 		#region ControlTemplate Stuff
@@ -16,6 +16,8 @@ namespace Xamarin.Forms
 		TapGestureRecognizer _tapGestureRecognizer;
 		Shape _normalEllipse;
 		Shape _checkMark;
+		static Color _radioButtonCheckMarkThemeColor = ResolveThemeColor("RadioButtonCheckMarkThemeColor");
+		static Color _radioButtonThemeColor = ResolveThemeColor("RadioButtonThemeColor");
 
 		void Initialize()
 		{
@@ -28,8 +30,8 @@ namespace Xamarin.Forms
 		{
 			base.OnParentSet();
 
-			//if (ControlTemplate == null)
-			//	ControlTemplate = Application.Current.Resources["RadioButtonTemplate"] as ControlTemplate;
+			if (ControlTemplate == null)
+				ControlTemplate = DefaultTemplate;
 		}
 
 		protected override void OnApplyTemplate()
@@ -54,6 +56,25 @@ namespace Xamarin.Forms
 			}
 		}
 
+		static Color ResolveThemeColor(string key) 
+		{
+			try
+			{
+				return (Color)Application.Current.Resources[key];
+			}
+			catch 
+			{ 
+				// TODO ezhart check for reasonable exceptions here (missing key, key isn't actually a color)
+				// and maybe log them, re-throw for everything else
+
+				// I'm not entirely convinced this is the right way to handle these colors.
+			}
+
+			// TODO ezhart We need to make this return the appropriate default color based on the mode
+			// (obviously black isn't a good choice in dark mode)
+			return Color.Black;
+		}
+
 		void OnRadioButtonChecked(object sender, EventArgs e)
 		{
 			IsChecked = !IsChecked;
@@ -61,7 +82,7 @@ namespace Xamarin.Forms
 			if (IsChecked)
 			{
 				if (_normalEllipse != null)
-					_normalEllipse.Stroke = (Color)Application.Current.Resources["RadioButtonCheckMarkThemeColor"];
+					_normalEllipse.Stroke = _radioButtonCheckMarkThemeColor;
 
 				if (_checkMark != null)
 					_checkMark.Opacity = 1;
@@ -69,13 +90,95 @@ namespace Xamarin.Forms
 			else
 			{
 				if (_normalEllipse != null)
-					_normalEllipse.Stroke = (Color)Application.Current.Resources["RadioButtonThemeColor"];
+					_normalEllipse.Stroke = _radioButtonThemeColor;
 
 				if (_checkMark != null)
 					_checkMark.Opacity = 0;
 			}
 		}
+
+		static ControlTemplate s_defaultTemplate;
+		public static ControlTemplate DefaultTemplate
+		{
+			get 
+			{
+				if (s_defaultTemplate == null)
+				{
+					s_defaultTemplate = new ControlTemplate(() => BuildDefaultTemplate());
+				}
+
+				return s_defaultTemplate;
+			}
+		}
+
+		static View BuildDefaultTemplate() 
+		{
+			var frame = new Frame
+			{
+				HasShadow = false,
+				BackgroundColor = Color.Transparent,
+				VerticalOptions = LayoutOptions.Start,
+				HorizontalOptions = LayoutOptions.Start,
+				Margin = new Thickness(6),
+				Padding = new Thickness(0)
+			};
+
+			var grid = new Grid
+			{
+				RowSpacing = 0,
+				ColumnDefinitions = new ColumnDefinitionCollection {
+					new ColumnDefinition { Width = GridLength.Star },
+					new ColumnDefinition { Width = GridLength.Auto }
+				}
+			};
+
+			var normalEllipse = new Ellipse
+			{
+				Fill = Color.Transparent,
+				HeightRequest = 21,
+				WidthRequest = 21,
+				StrokeThickness = 2,
+				Stroke = _radioButtonThemeColor
+			};
+
+			var checkMark = new Ellipse
+			{
+				Fill = _radioButtonCheckMarkThemeColor,
+				Aspect = Stretch.Uniform,
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center,
+				HeightRequest = 11,
+				WidthRequest = 11,
+				Opacity = 0,
+				Margin = new Thickness(1, 1, 0, 0)
+			};
+
+			var contentPresenter = new ContentPresenter
+			{
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center
+			};
+			contentPresenter.SetBinding(ContentPresenter.ContentProperty, new Binding("Content", source: RelativeBindingSource.TemplatedParent));
+			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));
+
+			grid.Children.Add(normalEllipse);
+			grid.Children.Add(checkMark);
+			grid.Children.Add(contentPresenter, 1, 0);
+
+			frame.Content = grid;
+
+			INameScope nameScope = new NameScope();
+			NameScope.SetNameScope(frame, nameScope);
+			nameScope.RegisterName("NormalEllipse", normalEllipse);
+			nameScope.RegisterName("CheckMark", checkMark);
+			nameScope.RegisterName("ContentPresenter", contentPresenter);
+
+			return frame;
+		}
+
 		#endregion
+
+
 
 		public static readonly BindableProperty ContentProperty =
 		  BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
@@ -95,10 +198,10 @@ namespace Xamarin.Forms
 		[Obsolete]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
-			if (IsPlatformEnabled)
-			{
-				return Device.PlatformServices.GetNativeSize(this, widthConstraint, heightConstraint);
-			}
+			//if (IsPlatformEnabled)
+			//{
+			//	return Device.PlatformServices.GetNativeSize(this, widthConstraint, heightConstraint);
+			//}
 
 			return base.OnSizeRequest(widthConstraint, heightConstraint);
 		}
