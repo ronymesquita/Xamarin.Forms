@@ -138,7 +138,8 @@ namespace Xamarin.Forms
 				HeightRequest = 21,
 				WidthRequest = 21,
 				StrokeThickness = 2,
-				Stroke = _radioButtonThemeColor
+				Stroke = _radioButtonThemeColor,
+				InputTransparent = true
 			};
 
 			var checkMark = new Ellipse
@@ -150,7 +151,8 @@ namespace Xamarin.Forms
 				HeightRequest = 11,
 				WidthRequest = 11,
 				Opacity = 0,
-				Margin = new Thickness(1, 1, 0, 0)
+				Margin = new Thickness(1, 1, 0, 0),
+				InputTransparent = true
 			};
 
 			var contentPresenter = new ContentPresenter
@@ -158,6 +160,7 @@ namespace Xamarin.Forms
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center
 			};
+
 			contentPresenter.SetBinding(ContentPresenter.ContentProperty, new Binding("Content", source: RelativeBindingSource.TemplatedParent));
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));
 
