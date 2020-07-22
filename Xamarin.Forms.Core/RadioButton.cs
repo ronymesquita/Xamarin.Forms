@@ -31,7 +31,13 @@ namespace Xamarin.Forms
 			base.OnParentSet();
 
 			if (ControlTemplate == null)
-				ControlTemplate = DefaultTemplate;
+			{
+				var rendererType = Internals.Registrar.Registered.GetHandlerType(typeof(RadioButton));
+				if (rendererType == null)
+				{
+					ControlTemplate = DefaultTemplate;
+				}
+			}
 		}
 
 		protected override void OnApplyTemplate()
@@ -181,8 +187,6 @@ namespace Xamarin.Forms
 
 		#endregion
 
-
-
 		public static readonly BindableProperty ContentProperty =
 		  BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
 
@@ -201,12 +205,18 @@ namespace Xamarin.Forms
 		[Obsolete]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
-			//if (IsPlatformEnabled)
-			//{
-			//	return Device.PlatformServices.GetNativeSize(this, widthConstraint, heightConstraint);
-			//}
+			if (ControlTemplate == null)
+			{
+				return Device.PlatformServices.GetNativeSize(this, widthConstraint, heightConstraint);
+			}
 
 			return base.OnSizeRequest(widthConstraint, heightConstraint);
+		}
+
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{
+			VerifyExperimental(nameof(RadioButton));
+			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
 
 		#region ITextElement
@@ -381,12 +391,6 @@ namespace Xamarin.Forms
 			ExperimentalFlags.VerifyFlagEnabled(nameof(RadioButton), ExperimentalFlags.RadioButtonExperimental, constructorHint, memberName);
 
 			isExperimentalFlagSet = true;
-		}
-
-		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
-		{
-			VerifyExperimental(nameof(RadioButton));
-			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
 
 		public IPlatformElementConfiguration<T, RadioButton> On<T>() where T : IConfigPlatform

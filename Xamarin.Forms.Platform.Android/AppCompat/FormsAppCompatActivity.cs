@@ -133,8 +133,6 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
 			RegisterHandler(typeof(CheckBox), typeof(CheckBoxRenderer), typeof(CheckBoxDesignerRenderer));
 
-			RegisterHandler(typeof(RadioButton), typeof(RadioButtonRenderer), typeof(RadioButtonRenderer));
-
 			if (Forms.Flags.Contains(Flags.UseLegacyRenderers))
 			{
 				RegisterHandler(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
@@ -147,6 +145,8 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
 				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
 			}
+
+			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
 		}
 
 		protected void LoadApplication(Application application)
