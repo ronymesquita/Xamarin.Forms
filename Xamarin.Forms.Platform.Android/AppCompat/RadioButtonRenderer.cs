@@ -184,6 +184,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
 				UpdateIsChecked();
+				UpdateText();
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
 
@@ -192,11 +193,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Button.TextColorProperty.PropertyName)
+			if (e.PropertyName == RadioButton.TextColorProperty.PropertyName)
 			{
 				UpdateTextColor();
 			}
-			else if (e.PropertyName == Button.FontProperty.PropertyName)
+			else if (e.IsOneOf(RadioButton.FontAttributesProperty, RadioButton.FontFamilyProperty, RadioButton.FontSizeProperty))
 			{
 				UpdateFont();
 			}
@@ -207,6 +208,10 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
 			{
 				UpdateIsChecked();
+			}
+			else if (e.PropertyName == RadioButton.ContentProperty.PropertyName)
+			{
+				UpdateText();
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -301,6 +306,19 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			Checked = ((RadioButton)Element).IsChecked;
+		}
+
+		void UpdateText()
+		{
+			if (Element == null || Control == null)
+			{
+				return;
+			}
+
+			if (Element.Content is string content)
+			{
+				Control.Text = content;
+			}
 		}
 
 		void IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)

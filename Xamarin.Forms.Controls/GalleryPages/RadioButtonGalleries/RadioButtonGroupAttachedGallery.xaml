@@ -7,10 +7,14 @@
              x:Class="Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries.RadioButtonGroupAttachedGallery">
     <ContentPage.Content>
         <StackLayout RadioButtonGroup.GroupName="foo">
-            <!--<Label Text="foo"/>-->
-            <RadioButton  />
-            <!--<RadioButton Content="Option B" />
-            <RadioButton Content="Option C" />-->
+            <Label Text="foo"/>
+            <RadioButton Text="Option A" />
+            <RadioButton Content="Option B" />
+            <RadioButton>
+                <RadioButton.Content>
+                    <Label FontSize="24" Text="Option C" RotationX="23"></Label>
+                </RadioButton.Content>
+            </RadioButton>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

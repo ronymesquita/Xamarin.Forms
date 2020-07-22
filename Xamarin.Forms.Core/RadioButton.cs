@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
@@ -8,7 +9,32 @@ using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
-	//[RenderWith(typeof(_RadioButtonRenderer))]
+	internal class ContentConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (value is View view)
+			{
+				return view;
+			}
+
+			if (value is string textContent)
+			{
+				return new Label
+				{
+					Text = textContent
+				};
+			}
+
+			return value;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>, ITextElement, IFontElement, IBorderElement
 	{
 		#region ControlTemplate Stuff
@@ -21,8 +47,11 @@ namespace Xamarin.Forms
 
 		void Initialize()
 		{
-			_tapGestureRecognizer = new TapGestureRecognizer();
-
+			if (ControlTemplate == null)
+			{
+				return;
+			}
+			
 			UpdateIsEnabled();
 		}
 
@@ -36,6 +65,7 @@ namespace Xamarin.Forms
 				if (rendererType == null)
 				{
 					ControlTemplate = DefaultTemplate;
+					UpdateIsEnabled();
 				}
 			}
 		}
@@ -50,6 +80,16 @@ namespace Xamarin.Forms
 
 		void UpdateIsEnabled()
 		{
+			if (ControlTemplate == null)
+			{
+				return;
+			}
+
+			if (_tapGestureRecognizer == null)
+			{
+				_tapGestureRecognizer = new TapGestureRecognizer();
+			}
+
 			if (IsEnabled)
 			{
 				_tapGestureRecognizer.Tapped += OnRadioButtonChecked;
@@ -167,7 +207,8 @@ namespace Xamarin.Forms
 				VerticalOptions = LayoutOptions.Center
 			};
 
-			contentPresenter.SetBinding(ContentPresenter.ContentProperty, new Binding("Content", source: RelativeBindingSource.TemplatedParent));
+			contentPresenter.SetBinding(ContentPresenter.ContentProperty, 
+				new Binding("Content", source: RelativeBindingSource.TemplatedParent, converter: new ContentConverter()));
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));
 
 			grid.Children.Add(normalEllipse);
@@ -198,7 +239,7 @@ namespace Xamarin.Forms
 
 		public string Text
 		{
-			get => GetValue(ContentProperty).ToString();
+			get => GetValue(ContentProperty)?.ToString();
 			set => SetValue(ContentProperty, value);
 		}
 
@@ -221,10 +262,12 @@ namespace Xamarin.Forms
 
 		#region ITextElement
 
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
 		public Color TextColor
 		{
-			get { return (Color)GetValue(TextElement.TextColorProperty); }
-			set { SetValue(TextElement.TextColorProperty, value); }
+			get { return (Color)GetValue(TextColorProperty); }
+			set { SetValue(TextColorProperty, value); }
 		}
 
 		public double CharacterSpacing
@@ -258,23 +301,29 @@ namespace Xamarin.Forms
 
 		#region IFontElement
 
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
+
 		public FontAttributes FontAttributes
 		{
-			get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
-			set { SetValue(FontElement.FontAttributesProperty, value); }
+			get { return (FontAttributes)GetValue(FontAttributesProperty); }
+			set { SetValue(FontAttributesProperty, value); }
 		}
 
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
+		
 		public string FontFamily
 		{
-			get { return (string)GetValue(FontElement.FontFamilyProperty); }
-			set { SetValue(FontElement.FontFamilyProperty, value); }
+			get { return (string)GetValue(FontFamilyProperty); }
+			set { SetValue(FontFamilyProperty, value); }
 		}
+
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
 		[TypeConverter(typeof(FontSizeConverter))]
 		public double FontSize
 		{
-			get { return (double)GetValue(FontElement.FontSizeProperty); }
-			set { SetValue(FontElement.FontSizeProperty, value); }
+			get { return (double)GetValue(FontSizeProperty); }
+			set { SetValue(FontSizeProperty, value); }
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue) =>
@@ -296,22 +345,28 @@ namespace Xamarin.Forms
 
 		#region IBorderElement
 
+		public static readonly BindableProperty BorderColorProperty = BorderElement.BorderColorProperty;
+
 		public Color BorderColor
 		{
-			get { return (Color)GetValue(BorderElement.BorderColorProperty); }
-			set { SetValue(BorderElement.BorderColorProperty, value); }
+			get { return (Color)GetValue(BorderColorProperty); }
+			set { SetValue(BorderColorProperty, value); }
 		}
+
+		public static readonly BindableProperty CornerRadiusProperty = BorderElement.CornerRadiusProperty;
 
 		public int CornerRadius
 		{
-			get { return (int)GetValue(BorderElement.CornerRadiusProperty); }
-			set { SetValue(BorderElement.CornerRadiusProperty, value); }
+			get { return (int)GetValue(CornerRadiusProperty); }
+			set { SetValue(CornerRadiusProperty, value); }
 		}
+
+		public static readonly BindableProperty BorderWidthProperty = BorderElement.BorderWidthProperty;
 
 		public double BorderWidth
 		{
-			get { return (double)GetValue(BorderElement.BorderWidthProperty); }
-			set { SetValue(BorderElement.BorderWidthProperty, value); }
+			get { return (double)GetValue(BorderWidthProperty); }
+			set { SetValue(BorderWidthProperty, value); }
 		}
 
 		int IBorderElement.CornerRadiusDefaultValue => (int)BorderElement.CornerRadiusProperty.DefaultValue;
