@@ -260,7 +260,6 @@ namespace Xamarin.Forms
 
 		public FontAttributes FontAttributes
 		{
-		// TODO ezhart Is there a nicer way to avoid all this boilerplate?
 			get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
 			set { SetValue(FontElement.FontAttributesProperty, value); }
 		}
@@ -278,28 +277,20 @@ namespace Xamarin.Forms
 			set { SetValue(FontElement.FontSizeProperty, value); }
 		}
 
-		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
-		{
-			throw new NotImplementedException();
-		}
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
-		void IFontElement.OnFontSizeChanged(double oldValue, double newValue)
-		{
-			throw new NotImplementedException();
-		}
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		double IFontElement.FontSizeDefaultValueCreator() =>
 			Device.GetNamedSize(NamedSize.Default, this);
-
-		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
-		{
-			throw new NotImplementedException();
-		}
-
-		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
-		{
-			throw new NotImplementedException();
-		}
 
 		#endregion
 
