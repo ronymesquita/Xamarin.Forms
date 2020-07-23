@@ -54,7 +54,7 @@ namespace Xamarin.Forms
 		{
 			foreach (var descendant in layout.Descendants())
 			{
-				UpdateGroupName(descendant, oldName, name);
+				UpdateGroupName(descendant, name, oldName);
 			}
 		}
 
