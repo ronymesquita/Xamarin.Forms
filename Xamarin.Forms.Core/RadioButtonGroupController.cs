@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	internal class RadioButtonGroupController
 	{
-		readonly Layout<View> _layout;
+		readonly Layout<View> _layout; // Move this to weak reference and use weakeventmanager for ChildAdded
 		string _groupName;
 		RadioButton _selection;
 
