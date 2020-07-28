@@ -32,12 +32,8 @@
 							new RadioButtonGroupBindingGallery(), Navigation),
 						GalleryBuilder.NavButton("RadioButton Group (Across Multiple Containers)", () =>
 							new ScatteredRadioButtonGallery(), Navigation),
-
 						GalleryBuilder.NavButton("RadioButton Content", () =>
 							new RadioButtonContentGallery(), Navigation),
-
-						GalleryBuilder.NavButton("RadioButton Group Attached Property", () =>
-							new RadioButtonGroupAttachedGallery(), Navigation)
 					}
 				}
 			};
