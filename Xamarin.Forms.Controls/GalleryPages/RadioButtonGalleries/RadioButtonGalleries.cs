@@ -26,6 +26,16 @@
 						button,
 						GalleryBuilder.NavButton("RadioButton Group Gallery", () =>
 							new RadioButtonGroupGalleryPage(), Navigation),
+						GalleryBuilder.NavButton("RadioButton Group (Attached Property)", () =>
+							new RadioButtonGroupGallery(), Navigation),
+						GalleryBuilder.NavButton("RadioButton Group (Attached Property, Binding)", () =>
+							new RadioButtonGroupBindingGallery(), Navigation),
+						GalleryBuilder.NavButton("RadioButton Group (Across Multiple Containers)", () =>
+							new ScatteredRadioButtonGallery(), Navigation),
+
+						GalleryBuilder.NavButton("RadioButton Content", () =>
+							new RadioButtonContentGallery(), Navigation),
+
 						GalleryBuilder.NavButton("RadioButton Group Attached Property", () =>
 							new RadioButtonGroupAttachedGallery(), Navigation)
 					}
