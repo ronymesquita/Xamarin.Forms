@@ -155,6 +155,15 @@ namespace Xamarin.Forms
 		{
 			// TODO ezhart Probably need to apply this to the content if we're using templates
 			// same for these other text property changes
+			if (UsingRenderer)
+			{
+				return;
+			}
+
+			if (Content is ITextElement textElement)
+			{
+				textElement.OnTextColorPropertyChanged(textElement.TextColor, newValue);
+			}
 		}
 
 		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
