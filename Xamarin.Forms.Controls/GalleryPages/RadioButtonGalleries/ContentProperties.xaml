@@ -8,8 +8,8 @@
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Propagate standard properties to Content where applicable:"/>
-            <Label Text="TextColor: CornflowerBlue"/>
-            <RadioButton TextColor="CornflowerBlue" Content="Option A" />
+            <Label Text="TextColor: Red"/>
+            <RadioButton TextColor="Red" Content="Option A" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
