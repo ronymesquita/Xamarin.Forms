@@ -7,10 +7,10 @@ namespace Xamarin.Forms
 		readonly Layout<View> _layout;
 
 		string _groupName;
-		private RadioButton _selection;
+		private object _selection;
 
 		public string GroupName { get => _groupName; set => SetGroupName(value); }
-		public RadioButton Selection { get => _selection; set => SetSelection(value); }
+		public object SelectedValue { get => _selection; set => SetSelection(value); }
 
 		public RadioButtonGroupController(Layout<View> layout)
 		{
@@ -31,6 +31,8 @@ namespace Xamarin.Forms
 				RadioButtonGroup.RadioButtonGroupSelectionChanged, HandleRadioButtonGroupSelectionChanged);
 			MessagingCenter.Subscribe<RadioButton, RadioButtonGroupNameChanged>(this, RadioButtonGroup.RadioButtonGroupNameChanged,
 				HandleRadioButtonGroupNameChanged);
+			MessagingCenter.Subscribe<RadioButton, RadioButtonValueChanged>(this, RadioButtonGroup.RadioButtonValueChanged,
+				HandleRadioButtonValueChanged);
 		}
 
 		void HandleRadioButtonGroupSelectionChanged(RadioButton selected, RadioButtonGroupSelectionChanged args)
@@ -46,7 +48,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			_layout.SetValue(RadioButtonGroup.SelectionProperty, selected);
+			_layout.SetValue(RadioButtonGroup.SelectedValueProperty, selected.Value);
 		}
 
 		void HandleRadioButtonGroupNameChanged(RadioButton radioButton, RadioButtonGroupNameChanged args) 
@@ -62,7 +64,23 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			_layout.ClearValue(RadioButtonGroup.SelectionProperty);
+			_layout.ClearValue(RadioButtonGroup.SelectedValueProperty);
+		}
+
+		void HandleRadioButtonValueChanged(RadioButton radioButton, RadioButtonValueChanged args)
+		{
+			if (radioButton.GroupName != _groupName)
+			{
+				return;
+			}
+
+			var controllerScope = RadioButtonGroup.GetVisualRoot(_layout);
+			if (args.Scope != controllerScope)
+			{
+				return;
+			}
+
+			_layout.SetValue(RadioButtonGroup.SelectedValueProperty, radioButton.Value);
 		}
 
 		void ChildAdded(object sender, ElementEventArgs e)
@@ -72,7 +90,17 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			UpdateGroupName(e.Element, _groupName);
+			if(!(e.Element is RadioButton radioButton))
+			{
+				return;
+			}
+
+			UpdateGroupName(radioButton, _groupName);
+
+			if (radioButton.IsChecked)
+			{
+				_layout.SetValue(RadioButtonGroup.SelectedValueProperty, radioButton.Value);
+			}
 		}
 
 		void UpdateGroupName(Element element, string name, string oldName = null)
@@ -98,13 +126,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void SetSelection(RadioButton radioButton)
+		void SetSelection(object radioButtonValue)
 		{
-			_selection = radioButton;
+			_selection = radioButtonValue;
 
-			if (radioButton != null)
+			if (radioButtonValue != null)
 			{
-				RadioButtonGroup.UpdateRadioButtonGroup(radioButton);
+				var radioButton = RadioButtonGroup.GetRadioButtonWithValue(radioButtonValue, _groupName);
+				if (radioButton != null)
+				{
+					radioButton.IsChecked = true;
+				}
 			}
 		}
 

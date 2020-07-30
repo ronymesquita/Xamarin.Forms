@@ -8,6 +8,7 @@ namespace Xamarin.Forms
 	{
 		internal const string RadioButtonGroupSelectionChanged = "RadioButtonGroupSelectionChanged";
 		internal const string RadioButtonGroupNameChanged = "RadioButtonGroupNameChanged";
+		internal const string RadioButtonValueChanged = "RadioButtonValueChanged";
 
 		internal static Dictionary<string, List<WeakReference<RadioButton>>> GroupNameToElements;
 
@@ -30,14 +31,14 @@ namespace Xamarin.Forms
 			return (string)b.GetValue(GroupNameProperty);
 		}
 
-		public static readonly BindableProperty SelectionProperty =
-			BindableProperty.Create("Selection", typeof(RadioButton), typeof(Layout<View>), null, 
+		public static readonly BindableProperty SelectedValueProperty =
+			BindableProperty.Create("SelectedValue", typeof(object), typeof(Layout<View>), null, 
 			defaultBindingMode: BindingMode.TwoWay,
-			propertyChanged: (b, o, n) => { GetRadioButtonGroupController(b).Selection = (RadioButton)n; });
+			propertyChanged: (b, o, n) => { GetRadioButtonGroupController(b).SelectedValue = n; });
 
-		public static RadioButton GetSelection(BindableObject b)
+		public static object GetSelectedValue(BindableObject bindableObject)
 		{
-			return (RadioButton)b.GetValue(SelectionProperty);
+			return bindableObject.GetValue(SelectedValueProperty);
 		}
 
 		internal static void UpdateRadioButtonGroup(RadioButton radioButton)
@@ -96,6 +97,25 @@ namespace Xamarin.Forms
 			MessagingCenter.Send(radioButton, RadioButtonGroupSelectionChanged, new RadioButtonGroupSelectionChanged(scope));
 		}
 
+		internal static RadioButton GetRadioButtonWithValue(object radioButtonValue, string groupName)
+		{
+			if (GroupNameToElements.TryGetValue(groupName, out List<WeakReference<RadioButton>> elements))
+			{
+				for (int n = 0; n < elements.Count; n++)
+				{
+					if (elements[n].TryGetTarget(out RadioButton rb))
+					{
+						if (rb.Value == radioButtonValue)
+						{
+							return rb;
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
 		internal static void Register(RadioButton radioButton, string groupName)
 		{
 			if (GroupNameToElements == null)
@@ -138,16 +158,16 @@ namespace Xamarin.Forms
 			}
 		}
 
-		static void OnControllerChanged(BindableObject b, RadioButtonGroupController oldC, 
-			RadioButtonGroupController newC)
+		static void OnControllerChanged(BindableObject bindableObject, RadioButtonGroupController oldController, 
+			RadioButtonGroupController newController)
 		{
-			if (newC == null)
+			if (newController == null)
 			{
 				return;
 			}
 
-			newC.GroupName = GetGroupName(b);
-			newC.Selection = GetSelection(b);
+			newController.GroupName = GetGroupName(bindableObject);
+			newController.SelectedValue = GetSelectedValue(bindableObject);
 		}
 
 		internal static Element GetVisualRoot(Element element)

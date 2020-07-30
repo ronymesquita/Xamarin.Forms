@@ -182,13 +182,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var layout = new Grid();
 			layout.SetValue(RadioButtonGroup.GroupNameProperty, "foo");
-			var selected = layout.GetValue(RadioButtonGroup.SelectionProperty);
+			var selected = layout.GetValue(RadioButtonGroup.SelectedValueProperty);
 
 			Assert.Null(selected);
 
-			var radioButton1 = new RadioButton();
-			var radioButton2 = new RadioButton();
-			var radioButton3 = new RadioButton();
+			var radioButton1 = new RadioButton() { Value = 1 };
+			var radioButton2 = new RadioButton() { Value = 2 };
+			var radioButton3 = new RadioButton() { Value = 3 };
 
 			layout.Children.Add(radioButton1);
 			layout.Children.Add(radioButton2);
@@ -198,15 +198,36 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			radioButton1.IsChecked = true;
 
-			selected = layout.GetValue(RadioButtonGroup.SelectionProperty) as RadioButton;
+			selected = layout.GetValue(RadioButtonGroup.SelectedValueProperty);
 
-			Assert.AreEqual(selected, radioButton1);
+			Assert.AreEqual(selected, 1);
 
 			Assert.AreEqual(radioButton1.GroupName, "foo");
 			radioButton1.GroupName = "bar";
 
-			selected = layout.GetValue(RadioButtonGroup.SelectionProperty) as RadioButton;
+			selected = layout.GetValue(RadioButtonGroup.SelectedValueProperty);
 			Assert.Null(selected);
+		}
+
+		[Test]
+		public void GroupSelectedValueUpdatesWhenSelectedButtonValueUpdates() 
+		{
+			var layout = new Grid();
+			layout.SetValue(RadioButtonGroup.GroupNameProperty, "foo");
+
+			var radioButton1 = new RadioButton() { Value = 1, IsChecked = true };
+			var radioButton2 = new RadioButton() { Value = 2 };
+			var radioButton3 = new RadioButton() { Value = 3 };
+
+			layout.Children.Add(radioButton1);
+			layout.Children.Add(radioButton2);
+			layout.Children.Add(radioButton3);
+
+			Assert.AreEqual(1, layout.GetValue(RadioButtonGroup.SelectedValueProperty));
+
+			radioButton1.Value = "updated";
+
+			Assert.AreEqual("updated", layout.GetValue(RadioButtonGroup.SelectedValueProperty));
 		}
 	}
 }

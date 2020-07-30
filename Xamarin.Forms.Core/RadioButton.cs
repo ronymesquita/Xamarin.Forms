@@ -31,7 +31,11 @@ namespace Xamarin.Forms
 		public event EventHandler<CheckedChangedEventArgs> CheckedChanged;
 
 		public static readonly BindableProperty ContentProperty =
-		  BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
+			BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
+
+		public static readonly BindableProperty ValueProperty =
+			BindableProperty.Create(nameof(Value), typeof(object), typeof(RadioButton), null,
+			propertyChanged: (b, o, n) => ((RadioButton)b).OnValuePropertyChanged());
 
 		public static readonly BindableProperty IsCheckedProperty = BindableProperty.Create(
 			nameof(IsChecked), typeof(bool), typeof(RadioButton), false, 
@@ -71,6 +75,12 @@ namespace Xamarin.Forms
 		{
 			get => GetValue(ContentProperty)?.ToString();
 			set => SetValue(ContentProperty, value);
+		}
+
+		public object Value
+		{
+			get => GetValue(ValueProperty);
+			set => SetValue(ValueProperty, value);
 		}
 
 		public bool IsChecked
@@ -345,6 +355,17 @@ namespace Xamarin.Forms
 			UpdateDisplay();
 			ChangeVisualState();
 			CheckedChanged?.Invoke(this, new CheckedChangedEventArgs(isChecked));
+		}
+
+		void OnValuePropertyChanged()
+		{
+			if (!IsChecked || string.IsNullOrEmpty(GroupName))
+			{
+				return;
+			}
+
+			MessagingCenter.Send(this, RadioButtonGroup.RadioButtonValueChanged,
+						new RadioButtonValueChanged(RadioButtonGroup.GetVisualRoot(this)));
 		}
 
 		void OnGroupNamePropertyChanged(string oldGroupName, string newGroupName)
